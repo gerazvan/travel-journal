@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "890352527895",
+    "firebase_url": "https://traveljournal-1de0e.firebaseio.com",
+    "project_id": "traveljournal-1de0e",
+    "storage_bucket": "traveljournal-1de0e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:890352527895:android:e2b4428c8808356d",
+        "android_client_info": {
+          "package_name": "razvan.com.traveljournal"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "890352527895-e62nf8aq02rshvvd938skf1q4n05v7lf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCY7kppnuyQk1c0xZjsELQHkCoeG-4LvLw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

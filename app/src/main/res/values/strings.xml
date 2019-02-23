@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Travel Journal</string>
+    <string name="drawer_home">Home</string>
+    <string name="drawer_favourite">Favourite</string>
+    <string name="drawer_info">About us</string>
+    <string name="drawer_contact">Contact us</string>
+    <string name="drawer_share">Share</string>
+    <string name="drawer_send">Send</string>
+    <string name="open_drawer">Open navigation drawer</string>
+    <string name="close_drawer">Close navigation drawer</string>
+    <string name="drawer_sign_out">Sign out</string>
+    <string name="sign_in">Sign In</string>
+</resources>
