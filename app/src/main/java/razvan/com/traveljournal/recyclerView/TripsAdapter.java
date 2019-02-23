@@ -48,9 +48,10 @@ public class TripsAdapter extends FirestoreAdapter<TripsViewHolder> {
 
         Trip currentTrip = getSnapshot(i).toObject(Trip.class);
 
-        String[] startDateParts = currentTrip.getStartDate().toString().split("/");
-        tripsViewHolder.titleTextView.setText(currentTrip.getTripName() + " " + startDateParts[2]);
+        String[] startDateParts = currentTrip.getStartDate().toString().split(" ");
+        tripsViewHolder.titleTextView.setText(currentTrip.getTripName() + " " + startDateParts[startDateParts.length - 1]);
         tripsViewHolder.locationTextView.setText(currentTrip.getDestination());
+        tripsViewHolder.ratingTextView.setText(currentTrip.getRating() + " / 5.0");
 
         File imageFile = new File(currentTrip.getImagePath());
         if(imageFile.exists()) {

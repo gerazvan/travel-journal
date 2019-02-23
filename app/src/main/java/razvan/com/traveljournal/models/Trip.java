@@ -23,6 +23,9 @@ public class Trip {
         this.imagePath = imagePath;
     }
 
+    public Trip() {
+    }
+
     public String getTripName() {
         return tripName;
     }

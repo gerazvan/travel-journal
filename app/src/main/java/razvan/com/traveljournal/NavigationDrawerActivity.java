@@ -136,9 +136,9 @@ public class NavigationDrawerActivity extends AppCompatActivity implements Navig
         tripsRecyclerView = findViewById(R.id.trips_recyclerview);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         tripsRecyclerView.setLayoutManager(layoutManager);
-        //mTrips = getTrips();
         tripsAdapter = new TripsAdapter(mQuery, null);
         tripsRecyclerView.setAdapter(tripsAdapter);
+        tripsAdapter.startListening();
     }
 
     private void initFirestore() {
