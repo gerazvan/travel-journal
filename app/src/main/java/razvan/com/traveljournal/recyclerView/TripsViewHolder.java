@@ -1,6 +1,7 @@
 package razvan.com.traveljournal.recyclerView;
 
 import android.support.annotation.NonNull;
+import android.support.v7.view.menu.MenuView;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
@@ -14,6 +15,7 @@ public class TripsViewHolder extends RecyclerView.ViewHolder {
     public TextView titleTextView;
     public TextView locationTextView;
     public TextView ratingTextView;
+    public View mItemView;
 
     public TripsViewHolder(@NonNull View itemView) {
         super(itemView);
@@ -22,6 +24,6 @@ public class TripsViewHolder extends RecyclerView.ViewHolder {
         titleTextView = itemView.findViewById(R.id.recycler_title_textView);
         locationTextView = itemView.findViewById(R.id.recycler_location_textView);
         ratingTextView = itemView.findViewById(R.id.recycler_rating_textView);
-
+        mItemView = itemView;
     }
 }

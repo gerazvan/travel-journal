@@ -32,27 +32,28 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.squareup.picasso.Picasso;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import razvan.com.traveljournal.recyclerView.TripsAdapter;
 import razvan.com.traveljournal.models.Trip;
 
 
-public class NavigationDrawerActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, GoogleApiClient.OnConnectionFailedListener {
+public class NavigationDrawerActivity extends AppCompatActivity implements TripsAdapter.OnTripSelectedListener,NavigationView.OnNavigationItemSelectedListener, GoogleApiClient.OnConnectionFailedListener {
 
     private static final int PERMISSION_REQUEST_CODE = 201;
     private static final int ADD_NEW_TRIP = 301;
     private static final int LIMIT = 50;
-    public static final String ANONYMOUS = "anonymous";
+    public static final String ANONYMOUS = "anonymou";
     private static final String TAG = "MainActivity";
+    public static final String TRIP_ID = "tripID";
+    public static final String DB_ID = "DB_ID";
 
     // Firebase instance variables
     private FirebaseAuth mFirebaseAuth;
@@ -68,7 +69,6 @@ public class NavigationDrawerActivity extends AppCompatActivity implements Navig
     private RecyclerView tripsRecyclerView;
     CollectionReference trips;
     private Query mQuery;
-    //private List<Trip> mTrips;
     private TripsAdapter tripsAdapter;
 
 
@@ -130,23 +130,24 @@ public class NavigationDrawerActivity extends AppCompatActivity implements Navig
 
         //Firestore
         initFirestore();
-        trips = mFirestore.collection("trips");
+        trips = mFirestore.collection(mEmail);
 
         //RecyclerView
         tripsRecyclerView = findViewById(R.id.trips_recyclerview);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         tripsRecyclerView.setLayoutManager(layoutManager);
-        tripsAdapter = new TripsAdapter(mQuery, null);
+        tripsAdapter = new TripsAdapter(mQuery, this);
         tripsRecyclerView.setAdapter(tripsAdapter);
         tripsAdapter.startListening();
     }
+
 
     private void initFirestore() {
         mFirestore = FirebaseFirestore.getInstance();
 
         // Get the 50 highest rated restaurants
-        mQuery = mFirestore.collection("trips")
-                .orderBy("tripName", Query.Direction.ASCENDING)
+        mQuery = mFirestore.collection(mEmail)
+                .orderBy("startDate", Query.Direction.ASCENDING)
                 .limit(LIMIT);
     }
 
@@ -255,23 +256,6 @@ public class NavigationDrawerActivity extends AppCompatActivity implements Navig
     }
 
 
-
-//    private List<Trip> getTrips() {
-//        List<Trip> trips = new ArrayList<>();
-//        trips.add(new Trip("Winter", "Paris", "2016", "a"));
-//        trips.add(new Trip("Spring", "London", "2017","a"));
-//        trips.add(new Trip("Summer", "Berlin", "2017", "a"));
-//        trips.add(new Trip("Autumn", "Cairo", "2017", "a"));
-//        trips.add(new Trip("Winter", "Madrid", "2017", "a"));
-//        trips.add(new Trip("Spring", "Sibiu", "2018", "a"));
-//        trips.add(new Trip("Summer", "Barcelona", "2018", "a"));
-//        trips.add(new Trip("Autumn", "Roma", "2018", "a"));
-//        trips.add(new Trip("Winter", "Milano", "2018", "a"));
-//        trips.add(new Trip("Spring", "Viena", "2019", "a"));
-//        return trips;
-//    }
-
-
     public void btnGoToOnClick(View view) {
         Intent intent = new Intent(NavigationDrawerActivity.this, AddTripActivity.class);
         startActivityForResult(intent, ADD_NEW_TRIP);
@@ -315,5 +299,13 @@ public class NavigationDrawerActivity extends AppCompatActivity implements Navig
         // be available.
         Log.d(TAG, "onConnectionFailed:" + connectionResult);
         Toast.makeText(this, "Google Play Services error.", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onTripSelected(DocumentSnapshot trip) {
+        Intent intent = new Intent(NavigationDrawerActivity.this, ViewTripActivity.class);
+        intent.putExtra(TRIP_ID, trip.getId());
+        intent.putExtra(DB_ID, mEmail);
+        startActivity(intent);
     }
 }

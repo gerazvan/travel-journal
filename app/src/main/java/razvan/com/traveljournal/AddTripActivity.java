@@ -272,6 +272,7 @@ public class AddTripActivity extends AppCompatActivity implements DatePickerDial
 
                 Bundle extras = data.getExtras();
                 Bitmap bmp = (Bitmap) extras.get("data");
+                //Toast.makeText(getApplicationContext(), bmp.getHeight() + " " + bmp.getWidth(), Toast.LENGTH_SHORT).show();
                 mPhotoPath = saveToInternalStorage(bmp);
                 imagePathTextView.setText(mPhotoPath);
 

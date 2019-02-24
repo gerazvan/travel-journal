@@ -36,6 +36,8 @@ public class TripsAdapter extends FirestoreAdapter<TripsViewHolder> {
         mListener = listener;
     }
 
+
+
     @NonNull
     @Override
     public TripsViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
@@ -44,7 +46,7 @@ public class TripsAdapter extends FirestoreAdapter<TripsViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(@NonNull TripsViewHolder tripsViewHolder, int i) {
+    public void onBindViewHolder(@NonNull TripsViewHolder tripsViewHolder, final int i) {
 
         Trip currentTrip = getSnapshot(i).toObject(Trip.class);
 
@@ -57,7 +59,28 @@ public class TripsAdapter extends FirestoreAdapter<TripsViewHolder> {
         if(imageFile.exists()) {
                 Bitmap myBitmap = BitmapFactory.decodeFile(currentTrip.getImagePath());
                 tripsViewHolder.tripImage.setImageBitmap(myBitmap);
+        }
+
+
+        // Click listener
+        tripsViewHolder.mItemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mListener != null) {
+                    mListener.onTripSelected(getSnapshot(i));
+                }
             }
+        });
+        tripsViewHolder.mItemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                if (mListener != null) {
+                    mListener.onTripSelected(getSnapshot(i));
+                }
+                return true;
+            }
+        });
+
 
     }
 
