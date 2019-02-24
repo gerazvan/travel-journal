@@ -3,10 +3,12 @@ package razvan.com.traveljournal;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,8 +28,10 @@ public class ViewTripActivity extends AppCompatActivity  implements EventListene
 
     private static final String TAG = "TripDetail";
 
-    private TextView tripName;
     private ImageView tripImage;
+    private TextView destination;
+    private TextView tripName;
+    private TextView tripType;
 
 
     private FirebaseFirestore mFirestore;
@@ -39,6 +43,9 @@ public class ViewTripActivity extends AppCompatActivity  implements EventListene
         setContentView(R.layout.activity_view_trip);
 
         tripImage = findViewById(R.id.trip_image_viewTrip);
+        destination = findViewById(R.id.trip_location_viewTrip);
+        tripName = findViewById(R.id.trip_name_viewTrip);
+        tripType = findViewById(R.id.trip_type_viewTrip);
 
         String tripId= getIntent().getExtras().getString(NavigationDrawerActivity.TRIP_ID);
         String dbId = getIntent().getExtras().getString(NavigationDrawerActivity.DB_ID);
@@ -71,6 +78,9 @@ public class ViewTripActivity extends AppCompatActivity  implements EventListene
         if(imageFile.exists()) {
             Bitmap myBitmap = BitmapFactory.decodeFile(trip.getImagePath());
             tripImage.setImageBitmap(myBitmap);
+            destination.setText(trip.getDestination());
+            tripName.setText(trip.getTripName());
+            tripType.setText(trip.getTripType());
         }
     }
 

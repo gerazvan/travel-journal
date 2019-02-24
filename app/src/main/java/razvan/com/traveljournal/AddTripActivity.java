@@ -13,10 +13,13 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
+import android.os.StrictMode;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -37,6 +40,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import razvan.com.traveljournal.utils.CustomDatePickerFragment;
 
@@ -62,6 +66,7 @@ public class AddTripActivity extends AppCompatActivity implements DatePickerDial
     private String mEndDate;
     private boolean currentDatePick;
     private String mPhotoPath;
+    private Uri photoUri;
 
 
 
@@ -244,11 +249,38 @@ public class AddTripActivity extends AppCompatActivity implements DatePickerDial
 
     public void btnTakePhotoOnClick(View view) {
 
+        File photoFile = null;
+        try {
+            photoFile = createImageFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        photoUri  = FileProvider.getUriForFile(this,"razvan.com.traveljournal.provider", photoFile);
+        intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, photoUri);
+        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+        StrictMode.setVmPolicy(builder.build());
         startActivityForResult(intent, TAKEPHOTO_REQUEST_CODE);
 
     }
 
+    private File createImageFile() throws IOException {
+        String timeStamp =
+                new SimpleDateFormat("yyyyMMdd_HHmmss",
+                        Locale.getDefault()).format(new Date());
+        String imageFileName = "IMG_" + timeStamp + "_";
+        File storageDir =
+                getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        mPhotoPath = image.getAbsolutePath();
+        return image;
+    }
 
 
     @Override
@@ -269,40 +301,12 @@ public class AddTripActivity extends AppCompatActivity implements DatePickerDial
             }
         } else if(requestCode == TAKEPHOTO_REQUEST_CODE) {
             if(resultCode == Activity.RESULT_OK) {
-
-                Bundle extras = data.getExtras();
-                Bitmap bmp = (Bitmap) extras.get("data");
-                //Toast.makeText(getApplicationContext(), bmp.getHeight() + " " + bmp.getWidth(), Toast.LENGTH_SHORT).show();
-                mPhotoPath = saveToInternalStorage(bmp);
                 imagePathTextView.setText(mPhotoPath);
-
             }
         }
     }
 
-    private String saveToInternalStorage(Bitmap bitmapImage){
-        ContextWrapper cw = new ContextWrapper(getApplicationContext());
-        File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd-hh-mm-ss");
-        String name = df.format(new Date());
-        File mypath=new File(directory,name + ".jpg");
 
-        FileOutputStream fos = null;
-        try {
-            fos = new FileOutputStream(mypath);
-            // Use the compress method on the BitMap object to write image to the OutputStream
-            bitmapImage.compress(Bitmap.CompressFormat.PNG, 100, fos);
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                fos.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return directory.getAbsolutePath() + "/" + name + ".jpg";
-    }
 
     private void reqCameraAccess() {
         if (checkPermission()) {
