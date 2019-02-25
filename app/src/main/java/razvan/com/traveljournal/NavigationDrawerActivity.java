@@ -2,13 +2,16 @@ package razvan.com.traveljournal;
 
 import android.Manifest;
 import android.app.Activity;
+import android.arch.persistence.room.Room;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -43,6 +46,7 @@ import java.util.Date;
 
 import razvan.com.traveljournal.recyclerView.TripsAdapter;
 import razvan.com.traveljournal.models.Trip;
+import razvan.com.traveljournal.room.TravelJournalDatabase;
 
 
 public class NavigationDrawerActivity extends AppCompatActivity implements TripsAdapter.OnTripSelectedListener,NavigationView.OnNavigationItemSelectedListener, GoogleApiClient.OnConnectionFailedListener {
@@ -65,6 +69,9 @@ public class NavigationDrawerActivity extends AppCompatActivity implements Trips
     private String mEmail;
     private String mPhotoUrl;
     private GoogleApiClient mGoogleApiClient;
+
+    //Room
+    public static TravelJournalDatabase tjdb;
 
     private RecyclerView tripsRecyclerView;
     CollectionReference trips;
@@ -139,6 +146,10 @@ public class NavigationDrawerActivity extends AppCompatActivity implements Trips
         tripsAdapter = new TripsAdapter(mQuery, this);
         tripsRecyclerView.setAdapter(tripsAdapter);
         tripsAdapter.startListening();
+
+
+        //Room
+        tjdb = Room.databaseBuilder(getApplicationContext(), TravelJournalDatabase.class, "tripsdb").build();
     }
 
 
@@ -237,9 +248,9 @@ public class NavigationDrawerActivity extends AppCompatActivity implements Trips
                 }
                 double mRatingToDouble = Double.parseDouble(mRating);
 
-                Trip t = new Trip(mTripName, mDestination, mTripType, mPriceToInt, mStartDateToDate, mEndDateToDate, mRatingToDouble, mImagePath, false);
+                final Trip t = new Trip(mTripName, mDestination, mTripType, mPriceToInt, mStartDateToDate, mEndDateToDate, mRatingToDouble, mImagePath, false);
                 trips.add(t);
-                Toast.makeText(this, "Trip successfully added", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Trip added successfully!", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -269,15 +280,27 @@ public class NavigationDrawerActivity extends AppCompatActivity implements Trips
     }
 
     @Override
-    public void onIconPressed(DocumentSnapshot trip, ImageView iconView) {
+    public void onIconPressed(final DocumentSnapshot trip, ImageView iconView) {
         if((boolean)trip.get("isFavourite")) {
             trips.document(trip.getId()).update("isFavourite", false);
             iconView.setImageResource(R.drawable.ic_bookmarked_not);
             Toast.makeText(this, "Trip removed for favourites!", Toast.LENGTH_SHORT).show();
+            AsyncTask.execute(new Runnable() {
+                @Override
+                public void run() {
+                    tjdb.tripDao().deleteTrip(trip.toObject(Trip.class));
+                }
+            });
         } else {
             trips.document(trip.getId()).update("isFavourite", true);
             iconView.setImageResource(R.drawable.ic_bookmarked);
             Toast.makeText(this, "Trip marked as favourite!", Toast.LENGTH_SHORT).show();
+            AsyncTask.execute(new Runnable() {
+                @Override
+                public void run() {
+                    tjdb.tripDao().addTrip(trip.toObject(Trip.class));
+                }
+            });
         }
     }
 
