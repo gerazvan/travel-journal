@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,6 +33,10 @@ public class ViewTripActivity extends AppCompatActivity  implements EventListene
     private TextView destination;
     private TextView tripName;
     private TextView tripType;
+    private RatingBar ratingBar;
+    private TextView startDate;
+    private TextView endDate;
+    private TextView price;
 
 
     private FirebaseFirestore mFirestore;
@@ -46,6 +51,10 @@ public class ViewTripActivity extends AppCompatActivity  implements EventListene
         destination = findViewById(R.id.trip_location_viewTrip);
         tripName = findViewById(R.id.trip_name_viewTrip);
         tripType = findViewById(R.id.trip_type_viewTrip);
+        ratingBar = findViewById(R.id.trip_rating_viewTrip);
+        startDate = findViewById(R.id.trip_start_date_viewTrip);
+        endDate = findViewById(R.id.trip_end_date_viewTrip);
+        price = findViewById(R.id.trip_price_viewTrip);
 
         String tripId= getIntent().getExtras().getString(NavigationDrawerActivity.TRIP_ID);
         String dbId = getIntent().getExtras().getString(NavigationDrawerActivity.DB_ID);
@@ -64,9 +73,14 @@ public class ViewTripActivity extends AppCompatActivity  implements EventListene
     }
 
     @Override
+    public void onBackPressed() {
+        finish();
+    }
+
+    @Override
     public void onEvent(DocumentSnapshot snapshot, FirebaseFirestoreException e) {
         if (e != null) {
-            Log.w(TAG, "restaurant:onEvent", e);
+            Log.w(TAG, "trip:onEvent", e);
             return;
         }
 
@@ -81,6 +95,12 @@ public class ViewTripActivity extends AppCompatActivity  implements EventListene
             destination.setText(trip.getDestination());
             tripName.setText(trip.getTripName());
             tripType.setText(trip.getTripType());
+            ratingBar.setRating((float)trip.getRating());
+            String[] startDateParts = trip.getStartDate().toString().split(" ");
+            String[] endDateParts = trip.getEndDate().toString().split(" ");
+            startDate.setText(startDateParts[2] + " " + startDateParts[1] + " " + startDateParts[5]);
+            endDate.setText(endDateParts[2] + " " + endDateParts[1] + " " + endDateParts[5]);
+            price.setText(trip.getPrice() + " EUR");
         }
     }
 

@@ -27,6 +27,8 @@ public class TripsAdapter extends FirestoreAdapter<TripsViewHolder> {
 
         void onTripSelected(DocumentSnapshot trip);
 
+        void onTripLongPressed(DocumentSnapshot trip);
+
     }
 
     private OnTripSelectedListener mListener;
@@ -59,6 +61,8 @@ public class TripsAdapter extends FirestoreAdapter<TripsViewHolder> {
         if(imageFile.exists()) {
                 Bitmap myBitmap = BitmapFactory.decodeFile(currentTrip.getImagePath());
                 tripsViewHolder.tripImage.setImageBitmap(myBitmap);
+                tripsViewHolder.tripImage.setClipToOutline(true);
+
         }
 
 
@@ -75,7 +79,7 @@ public class TripsAdapter extends FirestoreAdapter<TripsViewHolder> {
             @Override
             public boolean onLongClick(View view) {
                 if (mListener != null) {
-                    mListener.onTripSelected(getSnapshot(i));
+                    mListener.onTripLongPressed(getSnapshot(i));
                 }
                 return true;
             }

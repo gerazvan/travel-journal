@@ -257,7 +257,9 @@ public class NavigationDrawerActivity extends AppCompatActivity implements Trips
 
 
     public void btnGoToOnClick(View view) {
-        Intent intent = new Intent(NavigationDrawerActivity.this, AddTripActivity.class);
+        Intent intent = new Intent(NavigationDrawerActivity.this, AddOrEditTripActivity.class);
+        intent.putExtra(TRIP_ID, (String)null);
+        intent.putExtra(DB_ID, (String)null);
         startActivityForResult(intent, ADD_NEW_TRIP);
     }
 
@@ -266,14 +268,14 @@ public class NavigationDrawerActivity extends AppCompatActivity implements Trips
 
         if (requestCode == ADD_NEW_TRIP) {
             if(resultCode == Activity.RESULT_OK) {
-                String mTripName = data.getStringExtra(AddTripActivity.TRIPNAME);
-                String mDestination = data.getStringExtra(AddTripActivity.DESTINATION);
-                String mTripType = data.getStringExtra(AddTripActivity.TRIPTYPE);
-                String mStartDate = data.getStringExtra(AddTripActivity.STARTDATE);
-                String mEndDate = data.getStringExtra(AddTripActivity.ENDDATE);
-                String mPrice = data.getStringExtra(AddTripActivity.PRICE);
-                String mRating = data.getStringExtra(AddTripActivity.RATING);
-                String mImagePath = data.getStringExtra(AddTripActivity.PHOTOPATH);
+                String mTripName = data.getStringExtra(AddOrEditTripActivity.TRIPNAME);
+                String mDestination = data.getStringExtra(AddOrEditTripActivity.DESTINATION);
+                String mTripType = data.getStringExtra(AddOrEditTripActivity.TRIPTYPE);
+                String mStartDate = data.getStringExtra(AddOrEditTripActivity.STARTDATE);
+                String mEndDate = data.getStringExtra(AddOrEditTripActivity.ENDDATE);
+                String mPrice = data.getStringExtra(AddOrEditTripActivity.PRICE);
+                String mRating = data.getStringExtra(AddOrEditTripActivity.RATING);
+                String mImagePath = data.getStringExtra(AddOrEditTripActivity.PHOTOPATH);
 
                 int mPriceToInt = Integer.parseInt(mPrice);
                 SimpleDateFormat format = new SimpleDateFormat("d/M/y");
@@ -304,6 +306,14 @@ public class NavigationDrawerActivity extends AppCompatActivity implements Trips
     @Override
     public void onTripSelected(DocumentSnapshot trip) {
         Intent intent = new Intent(NavigationDrawerActivity.this, ViewTripActivity.class);
+        intent.putExtra(TRIP_ID, trip.getId());
+        intent.putExtra(DB_ID, mEmail);
+        startActivity(intent);
+    }
+
+    @Override
+    public void onTripLongPressed(DocumentSnapshot trip) {
+        Intent intent = new Intent(NavigationDrawerActivity.this, AddOrEditTripActivity.class);
         intent.putExtra(TRIP_ID, trip.getId());
         intent.putExtra(DB_ID, mEmail);
         startActivity(intent);

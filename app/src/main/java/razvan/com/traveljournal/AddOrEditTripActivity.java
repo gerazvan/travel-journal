@@ -4,13 +4,10 @@ import android.Manifest;
 import android.app.Activity;
 
 import android.app.DatePickerDialog;
-import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -23,6 +20,7 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -34,22 +32,30 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import razvan.com.traveljournal.models.Trip;
 import razvan.com.traveljournal.utils.CustomDatePickerFragment;
 
 
-public class AddTripActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
+public class AddOrEditTripActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, EventListener<DocumentSnapshot> {
 
     public static final int SELECTPHOTO_REQUEST_CODE = 100;
     public static final int TAKEPHOTO_REQUEST_CODE = 110;
     private static final int PERMISSION_REQUEST_CODE = 200;
+
+    private static final String TAG = "TripDetail";
 
     private EditText tripName;
     private EditText destination;
@@ -64,10 +70,14 @@ public class AddTripActivity extends AppCompatActivity implements DatePickerDial
 
     private String mStartDate;
     private String mEndDate;
-    private boolean currentDatePick;
     private String mPhotoPath;
+    private boolean currentDatePick;
     private Uri photoUri;
 
+    private FirebaseFirestore mFirestore;
+    private DocumentReference mTripRef;
+    private String dbId;
+    private String tripId;
 
 
     public static final String TRIPNAME = "tripname";
@@ -83,9 +93,66 @@ public class AddTripActivity extends AppCompatActivity implements DatePickerDial
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_trip);
-
         reqCameraAccess();
 
+        tripId= getIntent().getExtras().getString(NavigationDrawerActivity.TRIP_ID);
+        dbId = getIntent().getExtras().getString(NavigationDrawerActivity.DB_ID);
+        mFirestore = null;
+        mTripRef = null;
+        if(dbId != null && tripId != null) {
+            // Initialize Firestore
+            mFirestore = FirebaseFirestore.getInstance();
+            // Get reference to the trip
+            mTripRef = mFirestore.collection(dbId).document(tripId);
+        }
+
+        initViews();
+
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if(mTripRef != null) {
+            mTripRef.addSnapshotListener(this);
+        }
+    }
+
+    @Override
+    public void onEvent(DocumentSnapshot snapshot, FirebaseFirestoreException e) {
+        if (e != null) {
+            Log.w(TAG, "trip:onEvent", e);
+            return;
+        }
+
+        onTripLoaded(snapshot.toObject(Trip.class));
+    }
+
+    private void onTripLoaded(Trip trip) {
+        tripName.setText(trip.getTripName());
+        destination.setText(trip.getDestination());
+        if(trip.getTripType().equals("City Break")) {
+            tripType.check(R.id.city_break_radioButton);
+        } else if(trip.getTripType().equals("Seaside")) {
+            tripType.check(R.id.seaside_radioButton);
+        } else if(trip.getTripType().equals("Mountains")) {
+            tripType.check(R.id.mountains_radioButton);
+        }
+        priceTextView.setText("Price (" + trip.getPrice() + " EUR)");
+        price.setProgress(trip.getPrice() / 10);
+        SimpleDateFormat sdf = new SimpleDateFormat("d/M/y");
+        mStartDate = sdf.format(trip.getStartDate());
+        mEndDate = sdf.format(trip.getEndDate());
+        startDateButton.setHint(mStartDate);
+        endDateButton.setHint(mEndDate);
+        rating.setRating((float)trip.getRating());
+        mPhotoPath = trip.getImagePath();
+        imagePathTextView.setText(mPhotoPath);
+
+
+    }
+
+    private void initViews() {
         tripName = findViewById(R.id.trip_name_editText);
         destination = findViewById(R.id.destination_editText);
         tripType = findViewById(R.id.trip_type_radioGroup);
@@ -95,8 +162,6 @@ public class AddTripActivity extends AppCompatActivity implements DatePickerDial
         endDateButton = findViewById(R.id.end_date_button);
         rating = findViewById(R.id.rating_bar);
         imagePathTextView = findViewById(R.id.image_path_textView);
-
-
         price.setMax(200);
         price.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -114,80 +179,59 @@ public class AddTripActivity extends AppCompatActivity implements DatePickerDial
 
             }
         });
-
         mStartDate = null;
         mEndDate = null;
         mPhotoPath = null;
-
     }
 
+
+
     public void btnSaveOnClick(View view) {
-        //get data
+        if(!checkDataIntegrity()) {
+            return;
+        }
         String mTripName = tripName.getText().toString();
-        if(mTripName == null || mTripName.isEmpty()) {
-            Toast.makeText(AddTripActivity.this, "Please enter a trip name", Toast.LENGTH_SHORT).show();
-            return;
-        }
         String mDestination = destination.getText().toString();
-        if(mDestination == null || mDestination.isEmpty()) {
-            Toast.makeText(AddTripActivity.this, "Please enter a destination", Toast.LENGTH_SHORT).show();
-            return;
-        }
         String mTripType = null;
         switch (tripType.getCheckedRadioButtonId()) {
             case R.id.city_break_radioButton:
                 mTripType = "City Break";
                 break;
             case R.id.seaside_radioButton:
-                mTripType = "SeaSide";
+                mTripType = "Seaside";
                 break;
             case R.id.mountains_radioButton:
                 mTripType = "Mountains";
                 break;
         }
-        if(mTripType == null || mTripType.isEmpty()) {
-            Toast.makeText(AddTripActivity.this, "Please enter select a trip type", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if(price.getProgress() == 0) {
-            Toast.makeText(AddTripActivity.this, "Please adjust the trip's price", Toast.LENGTH_SHORT).show();
-            return;
-        }
         String mPrice = Integer.toString(price.getProgress() * 10);
         String mRating = Float.toString(rating.getRating());
 
-        if(mStartDate == null) {
-            Toast.makeText(AddTripActivity.this, "Please enter a start date", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if(mEndDate == null) {
-            Toast.makeText(AddTripActivity.this, "Please enter an end date", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        SimpleDateFormat format = new SimpleDateFormat("d/M/y");
-        try {
-            Date sDate = format.parse(mStartDate);
-            Date eDate = format.parse(mEndDate);
-            if (eDate.compareTo(sDate) < 0) {
-                Toast.makeText(AddTripActivity.this, "The end date you entered occurs before the start date", Toast.LENGTH_SHORT).show();
-                return;
+        //Edit
+        if(mTripRef != null) {
+            SimpleDateFormat format = new SimpleDateFormat("d/M/y");
+            Date sDate = null;
+            Date eDate = null;
+            try {
+                sDate = format.parse(mStartDate);
+                eDate = format.parse(mEndDate);
+            } catch (ParseException e) {
+                e.printStackTrace();
             }
-        } catch (ParseException e) {
-            e.printStackTrace();
+            mTripRef.update(
+                    "destination", mDestination,
+                    "endDate", eDate,
+                    "imagePath", mPhotoPath,
+                    "price", price.getProgress() * 10,
+                    "rating", (double)rating.getRating(),
+                    "startDate", sDate,
+                    "tripName", mTripName,
+                    "tripType", mTripType);
+            finish();
         }
 
-
-        if(mPhotoPath == null) {
-            Toast.makeText(AddTripActivity.this, "Please select a photo", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-
-
-        Intent intent = new Intent(AddTripActivity.this, NavigationDrawerActivity.class);
+        //Add
+        Intent intent = new Intent(AddOrEditTripActivity.this, NavigationDrawerActivity.class);
         intent.putExtra(TRIPNAME, mTripName);
         intent.putExtra(DESTINATION, mDestination);
         intent.putExtra(TRIPTYPE, mTripType);
@@ -201,13 +245,63 @@ public class AddTripActivity extends AppCompatActivity implements DatePickerDial
         finish();
     }
 
+    private boolean checkDataIntegrity() {
+        if(tripName.getText().toString() == null || tripName.getText().toString().isEmpty()) {
+            Toast.makeText(AddOrEditTripActivity.this, "Please enter a trip name", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if(destination.getText().toString() == null || destination.getText().toString().isEmpty()) {
+            Toast.makeText(AddOrEditTripActivity.this, "Please enter a destination", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if(tripType.getCheckedRadioButtonId() == -1) {
+            Toast.makeText(AddOrEditTripActivity.this, "Please select a trip type", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if(price.getProgress() == 0) {
+            Toast.makeText(AddOrEditTripActivity.this, "Please adjust the trip's price", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if(mStartDate == null) {
+            Toast.makeText(AddOrEditTripActivity.this, "Please enter a start date", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if(mEndDate == null) {
+            Toast.makeText(AddOrEditTripActivity.this, "Please enter an end date", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        SimpleDateFormat format = new SimpleDateFormat("d/M/y");
+        try {
+            Date sDate = format.parse(mStartDate);
+            Date eDate = format.parse(mEndDate);
+            if (eDate.compareTo(sDate) < 0) {
+                Toast.makeText(AddOrEditTripActivity.this, "The end date you entered occurs before the start date", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        if(mPhotoPath == null) {
+            Toast.makeText(AddOrEditTripActivity.this, "Please select a photo", Toast.LENGTH_SHORT).show();
+            return false;
+
+        }
+
+        return true;
+    }
+
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(AddTripActivity.this, NavigationDrawerActivity.class);
+        if(dbId == null) {
+            finish();
+        }
+        Intent intent = new Intent(AddOrEditTripActivity.this, NavigationDrawerActivity.class);
         setResult(Activity.RESULT_CANCELED, intent);
         finish();
     }
 
+
+    //Date related
     public void btnStartDatePickerOnClick(View view) {
         currentDatePick = false;
         DialogFragment newFragment = new CustomDatePickerFragment();
@@ -228,12 +322,14 @@ public class AddTripActivity extends AppCompatActivity implements DatePickerDial
             startDateButton.setHint(mStartDate);
 
         } else {
-            mEndDate = day + "/" + (month + 1) + "/" + year;
+            mEndDate = day + "/"  + (month + 1) + "/" + year;
             endDateButton.setHint(mEndDate);
         }
+
     }
 
 
+    //Trip's image related
     public void btnSelectPhotoOnClick(View view) {
         Intent getIntent = new Intent(Intent.ACTION_GET_CONTENT);
         getIntent.setType("image/*");
@@ -308,6 +404,8 @@ public class AddTripActivity extends AppCompatActivity implements DatePickerDial
 
 
 
+    //Camera permission
+
     private void reqCameraAccess() {
         if (checkPermission()) {
             //main logic or main code
@@ -363,7 +461,7 @@ public class AddTripActivity extends AppCompatActivity implements DatePickerDial
     }
 
     private void showMessageOKCancel(String message, DialogInterface.OnClickListener okListener) {
-        new AlertDialog.Builder(AddTripActivity.this)
+        new AlertDialog.Builder(AddOrEditTripActivity.this)
                 .setMessage(message)
                 .setPositiveButton("OK", okListener)
                 .setNegativeButton("Cancel", null)

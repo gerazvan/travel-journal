@@ -25,7 +25,7 @@
             </meta-data>
         </provider>
         <activity
-            android:name=".AddTripActivity"
+            android:name=".AddOrEditTripActivity"
             android:label="Manage Trip" />
         <activity android:name=".NavigationDrawerActivity">
             <intent-filter>
