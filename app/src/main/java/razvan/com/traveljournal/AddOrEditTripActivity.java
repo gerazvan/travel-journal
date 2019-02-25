@@ -104,6 +104,7 @@ public class AddOrEditTripActivity extends AppCompatActivity implements DatePick
             mFirestore = FirebaseFirestore.getInstance();
             // Get reference to the trip
             mTripRef = mFirestore.collection(dbId).document(tripId);
+            mTripRef.addSnapshotListener(this);
         }
 
         initViews();
@@ -113,9 +114,6 @@ public class AddOrEditTripActivity extends AppCompatActivity implements DatePick
     @Override
     public void onStart() {
         super.onStart();
-        if(mTripRef != null) {
-            mTripRef.addSnapshotListener(this);
-        }
     }
 
     @Override
@@ -148,8 +146,6 @@ public class AddOrEditTripActivity extends AppCompatActivity implements DatePick
         rating.setRating((float)trip.getRating());
         mPhotoPath = trip.getImagePath();
         imagePathTextView.setText(mPhotoPath);
-
-
     }
 
     private void initViews() {
@@ -227,6 +223,8 @@ public class AddOrEditTripActivity extends AppCompatActivity implements DatePick
                     "startDate", sDate,
                     "tripName", mTripName,
                     "tripType", mTripType);
+
+            Toast.makeText(this, "Trip successfully edited", Toast.LENGTH_SHORT).show();
             finish();
         }
 

@@ -6,9 +6,12 @@ import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -17,6 +20,7 @@ import com.google.firebase.firestore.Query;
 import java.io.File;
 import java.util.List;
 
+import razvan.com.traveljournal.NavigationDrawerActivity;
 import razvan.com.traveljournal.R;
 import razvan.com.traveljournal.models.Trip;
 
@@ -28,6 +32,8 @@ public class TripsAdapter extends FirestoreAdapter<TripsViewHolder> {
         void onTripSelected(DocumentSnapshot trip);
 
         void onTripLongPressed(DocumentSnapshot trip);
+
+        void onIconPressed(DocumentSnapshot trip, ImageView iconView);
 
     }
 
@@ -48,7 +54,7 @@ public class TripsAdapter extends FirestoreAdapter<TripsViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(@NonNull TripsViewHolder tripsViewHolder, final int i) {
+    public void onBindViewHolder(@NonNull final TripsViewHolder tripsViewHolder, final int i) {
 
         Trip currentTrip = getSnapshot(i).toObject(Trip.class);
 
@@ -62,7 +68,13 @@ public class TripsAdapter extends FirestoreAdapter<TripsViewHolder> {
                 Bitmap myBitmap = BitmapFactory.decodeFile(currentTrip.getImagePath());
                 tripsViewHolder.tripImage.setImageBitmap(myBitmap);
                 tripsViewHolder.tripImage.setClipToOutline(true);
-
+        }
+        if((boolean)getSnapshot(i).get("isFavourite")) {
+            tripsViewHolder.bookmarkedIcon.setImageResource(R.drawable.ic_bookmarked);
+            Log.e("Aici", currentTrip.getIsFavourite() + "");
+        } else {
+            tripsViewHolder.bookmarkedIcon.setImageResource(R.drawable.ic_bookmarked_not);
+            Log.e("Aici", currentTrip.getIsFavourite() + "");
         }
 
 
@@ -82,6 +94,15 @@ public class TripsAdapter extends FirestoreAdapter<TripsViewHolder> {
                     mListener.onTripLongPressed(getSnapshot(i));
                 }
                 return true;
+            }
+        });
+
+        tripsViewHolder.bookmarkedIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mListener != null) {
+                    mListener.onIconPressed(getSnapshot(i), tripsViewHolder.bookmarkedIcon);
+                }
             }
         });
 

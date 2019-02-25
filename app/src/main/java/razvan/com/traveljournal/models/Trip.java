@@ -11,8 +11,9 @@ public class Trip {
     private Date endDate;
     private double rating;
     private String imagePath;
+    private boolean isFavourite;
 
-    public Trip(String tripName, String destination, String tripType, int price, Date startDate, Date endDate, double rating, String imagePath) {
+    public Trip(String tripName, String destination, String tripType, int price, Date startDate, Date endDate, double rating, String imagePath, boolean isFavourite) {
         this.tripName = tripName;
         this.destination = destination;
         this.tripType = tripType;
@@ -21,6 +22,7 @@ public class Trip {
         this.endDate = endDate;
         this.rating = rating;
         this.imagePath = imagePath;
+        this.isFavourite = isFavourite;
     }
 
     public Trip() {
@@ -56,5 +58,9 @@ public class Trip {
 
     public String getImagePath() {
         return imagePath;
+    }
+
+    public boolean getIsFavourite() {
+        return isFavourite;
     }
 }

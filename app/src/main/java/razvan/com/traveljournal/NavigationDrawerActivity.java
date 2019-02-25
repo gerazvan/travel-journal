@@ -151,6 +151,137 @@ public class NavigationDrawerActivity extends AppCompatActivity implements Trips
                 .limit(LIMIT);
     }
 
+
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (id == R.id.nav_home) {
+            mQuery = mFirestore.collection(mEmail)
+                    .orderBy("startDate", Query.Direction.ASCENDING)
+                    .limit(LIMIT);
+            tripsAdapter = new TripsAdapter(mQuery, this);
+            tripsRecyclerView.swapAdapter(tripsAdapter, false);
+            tripsAdapter.startListening();
+
+        } else if (id == R.id.nav_favourite) {
+            mQuery = mFirestore.collection(mEmail).whereEqualTo("isFavourite", true)
+                    .orderBy("startDate", Query.Direction.ASCENDING)
+                    .limit(LIMIT);
+            tripsAdapter = new TripsAdapter(mQuery, this);
+            tripsRecyclerView.swapAdapter(tripsAdapter, false);
+            tripsAdapter.startListening();
+
+        } else if (id == R.id.nav_info) {
+
+        } else if (id == R.id.nav_email) {
+
+        } else if (id == R.id.nav_signout) {
+
+            mFirebaseAuth.signOut();
+            Auth.GoogleSignInApi.signOut(mGoogleApiClient);
+            mUsername = ANONYMOUS;
+            startActivity(new Intent(this, SignInActivity.class));
+
+        } else if (id == R.id.nav_share) {
+
+        } else if (id == R.id.nav_send) {
+
+        }
+
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+
+    public void btnGoToOnClick(View view) {
+        Intent intent = new Intent(NavigationDrawerActivity.this, AddOrEditTripActivity.class);
+        intent.putExtra(TRIP_ID, (String)null);
+        intent.putExtra(DB_ID, (String)null);
+        startActivityForResult(intent, ADD_NEW_TRIP);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == ADD_NEW_TRIP) {
+            if(resultCode == Activity.RESULT_OK) {
+                String mTripName = data.getStringExtra(AddOrEditTripActivity.TRIPNAME);
+                String mDestination = data.getStringExtra(AddOrEditTripActivity.DESTINATION);
+                String mTripType = data.getStringExtra(AddOrEditTripActivity.TRIPTYPE);
+                String mStartDate = data.getStringExtra(AddOrEditTripActivity.STARTDATE);
+                String mEndDate = data.getStringExtra(AddOrEditTripActivity.ENDDATE);
+                String mPrice = data.getStringExtra(AddOrEditTripActivity.PRICE);
+                String mRating = data.getStringExtra(AddOrEditTripActivity.RATING);
+                String mImagePath = data.getStringExtra(AddOrEditTripActivity.PHOTOPATH);
+
+                int mPriceToInt = Integer.parseInt(mPrice);
+                SimpleDateFormat format = new SimpleDateFormat("d/M/y");
+                Date mStartDateToDate = null;
+                Date mEndDateToDate = null;
+                try {
+                    mStartDateToDate = format.parse(mStartDate);
+                    mEndDateToDate = format.parse(mEndDate);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                double mRatingToDouble = Double.parseDouble(mRating);
+
+                Trip t = new Trip(mTripName, mDestination, mTripType, mPriceToInt, mStartDateToDate, mEndDateToDate, mRatingToDouble, mImagePath, false);
+                trips.add(t);
+                Toast.makeText(this, "Trip successfully added", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        // An unresolvable error has occurred and Google APIs (including Sign-In) will not
+        // be available.
+        Log.d(TAG, "onConnectionFailed:" + connectionResult);
+        Toast.makeText(this, "Google Play Services error.", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onTripSelected(DocumentSnapshot trip) {
+        Intent intent = new Intent(NavigationDrawerActivity.this, ViewTripActivity.class);
+        intent.putExtra(TRIP_ID, trip.getId());
+        intent.putExtra(DB_ID, mEmail);
+        startActivity(intent);
+    }
+
+    @Override
+    public void onTripLongPressed(DocumentSnapshot trip) {
+        Intent intent = new Intent(NavigationDrawerActivity.this, AddOrEditTripActivity.class);
+        intent.putExtra(TRIP_ID, trip.getId());
+        intent.putExtra(DB_ID, mEmail);
+        startActivity(intent);
+    }
+
+    @Override
+    public void onIconPressed(DocumentSnapshot trip, ImageView iconView) {
+        if((boolean)trip.get("isFavourite")) {
+            trips.document(trip.getId()).update("isFavourite", false);
+            iconView.setImageResource(R.drawable.ic_bookmarked_not);
+            Toast.makeText(this, "Trip removed for favourites!", Toast.LENGTH_SHORT).show();
+        } else {
+            trips.document(trip.getId()).update("isFavourite", true);
+            iconView.setImageResource(R.drawable.ic_bookmarked);
+            Toast.makeText(this, "Trip marked as favourite!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    //Storage perm
     private void reqStoragePerm() {
 
         if (checkPermission()) {
@@ -214,108 +345,4 @@ public class NavigationDrawerActivity extends AppCompatActivity implements Trips
                 .show();
     }
 
-    @Override
-    public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
-    }
-
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (id == R.id.nav_home) {
-
-            drawer.closeDrawer(GravityCompat.START);
-
-        } else if (id == R.id.nav_favourite) {
-
-        } else if (id == R.id.nav_info) {
-
-        } else if (id == R.id.nav_email) {
-
-        } else if (id == R.id.nav_signout) {
-
-            mFirebaseAuth.signOut();
-            Auth.GoogleSignInApi.signOut(mGoogleApiClient);
-            mUsername = ANONYMOUS;
-            startActivity(new Intent(this, SignInActivity.class));
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
-        }
-
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
-    }
-
-
-    public void btnGoToOnClick(View view) {
-        Intent intent = new Intent(NavigationDrawerActivity.this, AddOrEditTripActivity.class);
-        intent.putExtra(TRIP_ID, (String)null);
-        intent.putExtra(DB_ID, (String)null);
-        startActivityForResult(intent, ADD_NEW_TRIP);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-        if (requestCode == ADD_NEW_TRIP) {
-            if(resultCode == Activity.RESULT_OK) {
-                String mTripName = data.getStringExtra(AddOrEditTripActivity.TRIPNAME);
-                String mDestination = data.getStringExtra(AddOrEditTripActivity.DESTINATION);
-                String mTripType = data.getStringExtra(AddOrEditTripActivity.TRIPTYPE);
-                String mStartDate = data.getStringExtra(AddOrEditTripActivity.STARTDATE);
-                String mEndDate = data.getStringExtra(AddOrEditTripActivity.ENDDATE);
-                String mPrice = data.getStringExtra(AddOrEditTripActivity.PRICE);
-                String mRating = data.getStringExtra(AddOrEditTripActivity.RATING);
-                String mImagePath = data.getStringExtra(AddOrEditTripActivity.PHOTOPATH);
-
-                int mPriceToInt = Integer.parseInt(mPrice);
-                SimpleDateFormat format = new SimpleDateFormat("d/M/y");
-                Date mStartDateToDate = null;
-                Date mEndDateToDate = null;
-                try {
-                    mStartDateToDate = format.parse(mStartDate);
-                    mEndDateToDate = format.parse(mEndDate);
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-                double mRatingToDouble = Double.parseDouble(mRating);
-
-                Trip t = new Trip(mTripName, mDestination, mTripType, mPriceToInt, mStartDateToDate, mEndDateToDate, mRatingToDouble, mImagePath);
-                trips.add(t);
-            }
-        }
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        // An unresolvable error has occurred and Google APIs (including Sign-In) will not
-        // be available.
-        Log.d(TAG, "onConnectionFailed:" + connectionResult);
-        Toast.makeText(this, "Google Play Services error.", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onTripSelected(DocumentSnapshot trip) {
-        Intent intent = new Intent(NavigationDrawerActivity.this, ViewTripActivity.class);
-        intent.putExtra(TRIP_ID, trip.getId());
-        intent.putExtra(DB_ID, mEmail);
-        startActivity(intent);
-    }
-
-    @Override
-    public void onTripLongPressed(DocumentSnapshot trip) {
-        Intent intent = new Intent(NavigationDrawerActivity.this, AddOrEditTripActivity.class);
-        intent.putExtra(TRIP_ID, trip.getId());
-        intent.putExtra(DB_ID, mEmail);
-        startActivity(intent);
-    }
 }
