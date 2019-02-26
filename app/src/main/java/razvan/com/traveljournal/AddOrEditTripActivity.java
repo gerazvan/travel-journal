@@ -95,17 +95,7 @@ public class AddOrEditTripActivity extends AppCompatActivity implements DatePick
         setContentView(R.layout.activity_add_trip);
         reqCameraAccess();
 
-        tripId= getIntent().getExtras().getString(NavigationDrawerActivity.TRIP_ID);
-        dbId = getIntent().getExtras().getString(NavigationDrawerActivity.DB_ID);
-        mFirestore = null;
-        mTripRef = null;
-        if(dbId != null && tripId != null) {
-            // Initialize Firestore
-            mFirestore = FirebaseFirestore.getInstance();
-            // Get reference to the trip
-            mTripRef = mFirestore.collection(dbId).document(tripId);
-            mTripRef.addSnapshotListener(this);
-        }
+        initFirestore();
 
         initViews();
 
@@ -126,26 +116,29 @@ public class AddOrEditTripActivity extends AppCompatActivity implements DatePick
         onTripLoaded(snapshot.toObject(Trip.class));
     }
 
-    private void onTripLoaded(Trip trip) {
-        tripName.setText(trip.getTripName());
-        destination.setText(trip.getDestination());
-        if(trip.getTripType().equals("City Break")) {
-            tripType.check(R.id.city_break_radioButton);
-        } else if(trip.getTripType().equals("Seaside")) {
-            tripType.check(R.id.seaside_radioButton);
-        } else if(trip.getTripType().equals("Mountains")) {
-            tripType.check(R.id.mountains_radioButton);
+    @Override
+    public void onBackPressed() {
+        if(dbId == null) {
+            finish();
         }
-        priceTextView.setText("Price (" + trip.getPrice() + " EUR)");
-        price.setProgress(trip.getPrice() / 10);
-        SimpleDateFormat sdf = new SimpleDateFormat("d/M/y");
-        mStartDate = sdf.format(trip.getStartDate());
-        mEndDate = sdf.format(trip.getEndDate());
-        startDateButton.setHint(mStartDate);
-        endDateButton.setHint(mEndDate);
-        rating.setRating((float)trip.getRating());
-        mPhotoPath = trip.getImagePath();
-        imagePathTextView.setText(mPhotoPath);
+        Intent intent = new Intent(AddOrEditTripActivity.this, NavigationDrawerActivity.class);
+        setResult(Activity.RESULT_CANCELED, intent);
+        finish();
+    }
+
+    //Inits
+    private void initFirestore() {
+        tripId= getIntent().getExtras().getString(NavigationDrawerActivity.TRIP_ID);
+        dbId = getIntent().getExtras().getString(NavigationDrawerActivity.DB_ID);
+        mFirestore = null;
+        mTripRef = null;
+        if(dbId != null && tripId != null) {
+            // Initialize Firestore
+            mFirestore = FirebaseFirestore.getInstance();
+            // Get reference to the trip
+            mTripRef = mFirestore.collection(dbId).document(tripId);
+            mTripRef.addSnapshotListener(this);
+        }
     }
 
     private void initViews() {
@@ -180,8 +173,30 @@ public class AddOrEditTripActivity extends AppCompatActivity implements DatePick
         mPhotoPath = null;
     }
 
+    private void onTripLoaded(Trip trip) {
+        tripName.setText(trip.getTripName());
+        destination.setText(trip.getDestination());
+        if(trip.getTripType().equals("City Break")) {
+            tripType.check(R.id.city_break_radioButton);
+        } else if(trip.getTripType().equals("Seaside")) {
+            tripType.check(R.id.seaside_radioButton);
+        } else if(trip.getTripType().equals("Mountains")) {
+            tripType.check(R.id.mountains_radioButton);
+        }
+        priceTextView.setText("Price (" + trip.getPrice() + " EUR)");
+        price.setProgress(trip.getPrice() / 10);
+        SimpleDateFormat sdf = new SimpleDateFormat("d/M/y");
+        mStartDate = sdf.format(trip.getStartDate());
+        mEndDate = sdf.format(trip.getEndDate());
+        startDateButton.setHint(mStartDate);
+        endDateButton.setHint(mEndDate);
+        rating.setRating((float)trip.getRating());
+        mPhotoPath = trip.getImagePath();
+        imagePathTextView.setText(mPhotoPath);
+    }
 
 
+    //Save data
     public void btnSaveOnClick(View view) {
         if(!checkDataIntegrity()) {
             return;
@@ -288,16 +303,6 @@ public class AddOrEditTripActivity extends AppCompatActivity implements DatePick
         return true;
     }
 
-    @Override
-    public void onBackPressed() {
-        if(dbId == null) {
-            finish();
-        }
-        Intent intent = new Intent(AddOrEditTripActivity.this, NavigationDrawerActivity.class);
-        setResult(Activity.RESULT_CANCELED, intent);
-        finish();
-    }
-
 
     //Date related
     public void btnStartDatePickerOnClick(View view) {
@@ -377,6 +382,7 @@ public class AddOrEditTripActivity extends AppCompatActivity implements DatePick
     }
 
 
+    //Get image / taken photo
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
@@ -401,9 +407,7 @@ public class AddOrEditTripActivity extends AppCompatActivity implements DatePick
     }
 
 
-
     //Camera permission
-
     private void reqCameraAccess() {
         if (checkPermission()) {
             //main logic or main code

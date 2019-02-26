@@ -42,7 +42,7 @@
         android:layout_marginBottom="16dp"
         android:layout_gravity="bottom|end"
         android:src="@drawable/ic_add"
-        android:onClick="btnGoToOnClick"
+        android:onClick="addTripOnClick"
         />
 
 

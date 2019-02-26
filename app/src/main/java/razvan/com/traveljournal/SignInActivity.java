@@ -39,6 +39,10 @@ public class SignInActivity extends AppCompatActivity  implements GoogleApiClien
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
 
+        initFirebaseAuth();
+    }
+
+    void initFirebaseAuth() {
         // Initialize FirebaseAuth
         mFirebaseAuth = FirebaseAuth.getInstance();
 
@@ -58,7 +62,6 @@ public class SignInActivity extends AppCompatActivity  implements GoogleApiClien
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
     }
-
 
     @Override
     public void onClick(View v) {

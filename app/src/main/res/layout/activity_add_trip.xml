@@ -6,31 +6,31 @@
     android:layout_height="match_parent"
     tools:context=".AddOrEditTripActivity"
     android:orientation="vertical"
-    android:layout_marginLeft="10dp"
-    android:layout_marginTop="10dp"
-    android:layout_marginRight="10dp"
-    android:layout_marginBottom="10dp">
+    android:layout_marginLeft="@dimen/add_trip_margin"
+    android:layout_marginTop="@dimen/add_trip_margin"
+    android:layout_marginRight="@dimen/add_trip_margin"
+    android:layout_marginBottom="@dimen/add_trip_margin">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_weight="1"
-        android:layout_marginTop="10dp">
+        android:layout_marginTop="@dimen/add_trip_margin">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Trip Name"
+            android:text="@string/trip_name"
             android:textStyle="bold"
-            android:textSize="15dp" />
+            android:textSize="@dimen/add_trip_text_size" />
 
         <EditText
             android:id="@+id/trip_name_editText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:drawableLeft="@android:drawable/ic_menu_info_details"
-            android:layout_marginBottom="10dp" />
+            android:layout_marginBottom="@dimen/add_trip_margin" />
 
     </LinearLayout>
 
@@ -43,16 +43,16 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Destination"
+            android:text="@string/destination"
             android:textStyle="bold"
-            android:textSize="15dp"/>
+            android:textSize="@dimen/add_trip_text_size"/>
 
         <EditText
             android:id="@+id/destination_editText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:drawableLeft="@android:drawable/ic_menu_myplaces"
-            android:layout_marginBottom="10dp"/>
+            android:layout_marginBottom="@dimen/add_trip_margin"/>
 
     </LinearLayout>
 
@@ -65,36 +65,36 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Trip Type"
+            android:text="@string/trip_type"
             android:textStyle="bold"
-            android:textSize="15dp"/>
+            android:textSize="@dimen/add_trip_text_size"/>
 
         <RadioGroup
             android:id="@+id/trip_type_radioGroup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginBottom="10dp">
+            android:layout_marginBottom="@dimen/add_trip_margin">
 
             <RadioButton
                 android:id="@+id/city_break_radioButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="City break"
-                android:layout_marginRight="5dp"/>
+                android:text="@string/city_break"
+                android:layout_marginRight="@dimen/radio_button_margin"/>
 
             <RadioButton
                 android:id="@+id/seaside_radioButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Seaside"
-                android:layout_marginRight="5dp"/>
+                android:text="@string/seaside"
+                android:layout_marginRight="@dimen/radio_button_margin"/>
 
             <RadioButton
                 android:id="@+id/mountains_radioButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Mountains"/>
+                android:text="@string/mountains"/>
 
         </RadioGroup>
 
@@ -111,17 +111,17 @@
             android:id="@+id/seek_bar_textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Price (0 EUR)"
+            android:text="@string/price_eur"
             android:textStyle="bold"
-            android:textSize="15dp"/>
+            android:textSize="@dimen/add_trip_text_size"/>
 
         <SeekBar
             android:id="@+id/price_seekBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginRight="5dp"
-            android:layout_marginLeft="5dp"
-            android:layout_marginBottom="10dp"/>
+            android:layout_marginRight="@dimen/seekbar_margin"
+            android:layout_marginLeft="@dimen/seekbar_margin"
+            android:layout_marginBottom="@dimen/add_trip_margin"/>
 
     </LinearLayout>
 
@@ -137,21 +137,21 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:layout_marginRight="5dp">
+            android:layout_marginRight="@dimen/add_trip_button_margin">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Start Date"
+                android:text="@string/start_date"
                 android:textStyle="bold"
-                android:textSize="15dp"/>
+                android:textSize="@dimen/add_trip_text_size"/>
 
             <Button
                 android:id="@+id/start_date_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:onClick="btnStartDatePickerOnClick"
-                android:hint="DD/MM/YYYY"/>
+                android:hint="@string/date_format"/>
 
         </LinearLayout>
 
@@ -160,21 +160,21 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:layout_marginLeft="5dp">
+            android:layout_marginLeft="@dimen/add_trip_button_margin">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="End Date"
+                android:text="@string/end_date"
                 android:textStyle="bold"
-                android:textSize="15dp"/>
+                android:textSize="@dimen/add_trip_text_size"/>
 
             <Button
                 android:id="@+id/end_date_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:onClick="btnEndDatePickerOnClick"
-                android:hint="DD/MM/YYYY"/>
+                android:hint="@string/date_format"/>
 
         </LinearLayout>
 
@@ -189,9 +189,9 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Rating"
+            android:text="@string/rating"
             android:textStyle="bold"
-            android:textSize="15dp"/>
+            android:textSize="@dimen/add_trip_text_size"/>
 
         <RatingBar
             android:id="@+id/rating_bar"
@@ -213,19 +213,19 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:layout_marginRight="5dp">
+            android:layout_marginRight="@dimen/add_trip_button_margin">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Gallery photo"
+                android:text="@string/gallery_photo"
                 android:textStyle="bold"
-                android:textSize="15dp"/>
+                android:textSize="@dimen/add_trip_text_size"/>
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="SELECT"
+                android:hint="@string/select"
                 android:onClick="btnSelectPhotoOnClick"/>
 
         </LinearLayout>
@@ -235,19 +235,19 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:layout_marginLeft="5dp">
+            android:layout_marginLeft="@dimen/add_trip_button_margin">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Take photo"
+                android:text="@string/take_photo"
                 android:textStyle="bold"
-                android:textSize="15dp"/>
+                android:textSize="@dimen/add_trip_text_size"/>
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="SELECT"
+                android:hint="@string/select"
                 android:onClick="btnTakePhotoOnClick"/>
 
         </LinearLayout>
@@ -263,12 +263,12 @@
     <Button
         android:id="@+id/save_trip_button"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:text="SAVE"
-        android:textColor="#fff"
-        android:background="#018577"
-        android:layout_marginBottom="10dp"
-        android:layout_marginTop="20dp"
+        android:layout_height="@dimen/save_button_layout_height"
+        android:text="@string/save"
+        android:textColor="@color/white"
+        android:background="@color/save_button_colour"
+        android:layout_marginBottom="@dimen/add_trip_button_margin"
+        android:layout_marginTop="@dimen/save_button_margin_top"
         android:onClick="btnSaveOnClick"/>
 
 

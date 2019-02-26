@@ -33,23 +33,20 @@
             android:id="@+id/recycler_title_textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="24sp"
-            android:text="Summer 2017"
+            android:textSize="@dimen/item_title_text_size"
             android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/recycler_location_textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:text="London" />
+            android:textSize="@dimen/item_destination_text_size" />
 
         <TextView
             android:id="@+id/recycler_rating_textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:text="2.5 / 5.0" />
+            android:textSize="@dimen/item_rating_text_size" />
 
         <ImageView
             android:id="@+id/recycler_bookmarked_imageView"

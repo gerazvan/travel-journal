@@ -9,10 +9,10 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="30sp"
+        android:textSize="@dimen/sign_in_text_size"
         android:textStyle="bold"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="@dimen/sign_in_textt_margin"
         android:text="@string/sign_in"/>
 
     <com.google.android.gms.common.SignInButton
