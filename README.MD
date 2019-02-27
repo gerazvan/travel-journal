@@ -4,7 +4,7 @@ Main features:
 &nbsp;&nbsp;&nbsp;• all the data from the app is saved in a Firebase Cloud Firestore  
 &nbsp;&nbsp;&nbsp;• the favourite trips are also saved locally in an SQLite database by using Room  
 
-![Cloud Firestore](https://raw.githubusercontent.com/gerazvan/travel-journal/master/screenshots/cloud_firestore.png | heigh=300)  
+![Cloud Firestore](https://raw.githubusercontent.com/gerazvan/travel-journal/master/screenshots/cloud_firestore.png)  
 
 Activities:  
   
