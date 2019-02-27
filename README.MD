@@ -18,7 +18,7 @@ Activities:
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- Home - leads to the home screen of the app  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- it's a RecyclerView that displays the list of trips  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- each RecyclerView item contains a small bookmark image that lets you add the trip to favourites  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- Favourite - the same home screen, but the query of the RecyclerView's adapter is changed to only display the trips marked as favourite  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- Favourite - the same home screen, but the query of the RecyclerView's adapter is changed to display only the trips marked as favourite  
 ![main screen](https://raw.githubusercontent.com/gerazvan/travel-journal/master/screenshots/main_screen.jpg)                                         ![favourites_screen](https://raw.githubusercontent.com/gerazvan/travel-journal/master/screenshots/favourites_only.jpg)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- About us  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- Contact us  
