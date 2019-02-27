@@ -14,7 +14,7 @@ Activities:
     
 • Navigation Drawer (main activity)  
 &nbsp;&nbsp;&nbsp;-> the header displays the profile pic, the e-mail address and the name of the Google account used to sign in.  
-&nbsp;&nbsp;&nbsp;-> the body contains the following implemented items  
+&nbsp;&nbsp;&nbsp;-> the body contains the following items  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- Home - leads to the home screen of the app  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- it's a RecyclerView that displays the list of trips  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- each RecyclerView item contains a small bookmark image that lets you add the trip to favourites  
