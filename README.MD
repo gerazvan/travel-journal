@@ -19,7 +19,7 @@ Activities:
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- it's a RecyclerView that displays the list of trips  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- each RecyclerView item contains a small bookmark image that lets you add the trip to favourites  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- Favourite - the same home screen, but the query of the RecyclerView's adapter is changed to only display the trips marked as favourite  
-![Cloud Firestore](https://raw.githubusercontent.com/gerazvan/travel-journal/master/screenshots/favourites_only.jpg)![Cloud Firestore](https://raw.githubusercontent.com/gerazvan/travel-journal/master/screenshots/main_screen.jpg)  
+![main screen](https://raw.githubusercontent.com/gerazvan/travel-journal/master/screenshots/main_screen.jpg)![favourites_screen](https://raw.githubusercontent.com/gerazvan/travel-journal/master/screenshots/favourites_only.jpg ) 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- About us  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- Contact us  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- Sign out - signs out of the Google account  
@@ -40,11 +40,11 @@ Activities:
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- An Image (either selected from the gallery, or taken using a camera intent)  
 &nbsp;&nbsp;&nbsp;-> Once clicked, the save button sends all the data back to the main activity, which will either add or edit the trip in the Cloud Firestore  
 
-![Cloud Firestore](https://raw.githubusercontent.com/gerazvan/travel-journal/master/screenshots/add_or_edit_trip.jpg)  
+![add_or edit screen](https://raw.githubusercontent.com/gerazvan/travel-journal/master/screenshots/add_or_edit_trip.jpg)  
    
  • View Trip  
 &nbsp;&nbsp;&nbsp;-> when clicked, each RecyclerView item displays the detalis of the trip in read only mode  
 
-![Cloud Firestore](https://raw.githubusercontent.com/gerazvan/travel-journal/master/screenshots/read_only_view.jpg)  
+![view trip screen](https://raw.githubusercontent.com/gerazvan/travel-journal/master/screenshots/read_only_view.jpg)  
   
     
